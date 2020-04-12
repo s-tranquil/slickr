@@ -1,44 +1,43 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import "../styles/app.css";
 
 import { getPicturesList } from "client";
-import {
-    IRecentPicture,
-    IRecentPictureCollection
-} from "client/contracts";
-import { Loader } from "loader";
+import { IRecentPicture } from "client/contracts";
+import { Infinite } from "infinite";
 
-function getPhotoUrl(photo: IRecentPicture) {
-    return `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`;
-}
+import { Photo } from "./Photo";
 
 function App() {
-    const [images, setImages] = React.useState<IRecentPictureCollection>();
+    //const [images, setImages] = React.useState<IRecentPictureCollection>();
 
-    React.useEffect(
-        () => {
-            getPicturesList().then(setImages)
-        },
+    // React.useEffect(
+    //     () => {
+    //         getPicturesList().then(setImages)
+    //     },
+    //     []
+    // );
+
+    const getNextPage = useCallback(
+        (pageNo: number) =>
+            getPicturesList(pageNo)
+                .then(result => result.photos.photo),
+        []
+    );
+
+    const renderPhoto = useCallback(
+        (photo: IRecentPicture) => (
+            <Photo photo={photo} />
+        ),
         []
     );
 
     return (
         <div className="body">
-            {!images && (
-                <div className="body__loader">
-                    <Loader />
-                </div>
-            )}
-            {images && (
-                <div className="photos">
-                {images.photos.photo.map(photo => (
-                    <div className="photo" key={photo.id}>
-                        <img className="photo__image" src={getPhotoUrl(photo)} />
-                    </div>
-                ))}
-                </div>
-            )}
+            <Infinite
+                fetchData={getNextPage}
+                renderItem={renderPhoto}
+            />
         </div>
     );
 }

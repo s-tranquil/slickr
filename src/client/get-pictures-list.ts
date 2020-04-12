@@ -1,11 +1,11 @@
 import { get } from "./fetch-client";
+
 import type { IRecentPictureCollection } from "./contracts";
 
-
-async function getPicturesList(): Promise<IRecentPictureCollection> {
+async function getPicturesList(page: number): Promise<IRecentPictureCollection> {
     const response = await get({
         method: "flickr.photos.getRecent",
-        page: 1,
+        page,
         per_page: 12,
         extras: "description, owner_name",
     });

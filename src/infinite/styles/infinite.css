@@ -1,0 +1,13 @@
+.infinite__loader {
+    width: 100%;
+    height: 200px;
+    position: absolute;
+    top: 30%;
+}
+
+.infinite__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-gap: 0.5rem;
+    height: 100%;
+}
