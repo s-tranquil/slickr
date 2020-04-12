@@ -1,26 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+
+import "./App.css";
+
+import { getPicturesList } from "./client";
+import {
+    IRecentPicture,
+    IRecentPictureCollection
+} from "./client/contracts";
+import { Loader } from "./loader";
+
+function getPhotoUrl(photo: IRecentPicture) {
+    return `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`;
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [images, setImages] = React.useState<IRecentPictureCollection>();
+
+    React.useEffect(
+        () => {
+            getPicturesList().then(setImages)
+        },
+        []
+    );
+
+    return (
+        <div className="body">
+            {!images && (
+                <div className="body__loader">
+                    <Loader />
+                </div>
+            )}
+            {images && (
+                <div className="photos">
+                {images.photos.photo.map(photo => (
+                    <div className="photo" key={photo.id}>
+                        <img className="photo__image" src={getPhotoUrl(photo)} />
+                    </div>
+                ))}
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default App;

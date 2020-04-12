@@ -1,0 +1,20 @@
+.loader{
+    margin: 0 0 2em;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    padding: 1em;
+    margin: 0 auto 1em;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.loader__icon {
+    height: 100%;
+    width: 100%;
+}
+
+.loader__icon path,
+.loader__icon rect {
+    fill: #FF6700;
+}
