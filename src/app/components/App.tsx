@@ -1,13 +1,13 @@
 import React from "react";
 
-import "./App.css";
+import "../styles/app.css";
 
-import { getPicturesList } from "./client";
+import { getPicturesList } from "client";
 import {
     IRecentPicture,
     IRecentPictureCollection
-} from "./client/contracts";
-import { Loader } from "./loader";
+} from "client/contracts";
+import { Loader } from "loader";
 
 function getPhotoUrl(photo: IRecentPicture) {
     return `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`;
@@ -43,4 +43,4 @@ function App() {
     );
 }
 
-export default App;
+export { App };
