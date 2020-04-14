@@ -1,8 +1,15 @@
 .infinite__loader {
     width: 100%;
     height: 200px;
+}
+
+.infinite__loader_initial {
     position: absolute;
     top: 30%;
+}
+
+.infinite__loader_more {
+    padding-top: 20px;
 }
 
 .infinite__items {

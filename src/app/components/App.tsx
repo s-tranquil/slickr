@@ -8,6 +8,8 @@ import { Infinite } from "infinite";
 
 import { Photo } from "./Photo";
 
+import type { IInfinitePage } from "infinite";
+
 function App() {
     //const [images, setImages] = React.useState<IRecentPictureCollection>();
 
@@ -18,10 +20,13 @@ function App() {
     //     []
     // );
 
-    const getNextPage = useCallback(
+    const getPhotos = useCallback(
         (pageNo: number) =>
             getPicturesList(pageNo)
-                .then(result => result.photos.photo),
+                .then(result => ({
+                    items: result.photos.photo,
+                    totalPages: result.photos.pages
+                } as IInfinitePage<IRecentPicture>)),
         []
     );
 
@@ -35,7 +40,7 @@ function App() {
     return (
         <div className="body">
             <Infinite
-                fetchData={getNextPage}
+                fetchData={getPhotos}
                 renderItem={renderPhoto}
             />
         </div>
