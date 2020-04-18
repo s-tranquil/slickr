@@ -6,10 +6,12 @@ import React, {
 
 import "../styles/infinite.css";
 
+import { useIsScrollBottom } from "infinite/hooks/useIsScrollBottom";
 import { Loader } from "loader";
 
-import type { IInfinitePage } from "../contracts/IInfinitePage";
+import { useWindowChangeListener } from "../hooks/useWindowChangeListener";
 
+import type { IInfinitePage } from "../contracts/IInfinitePage";
 interface IProps<TItem> {
     fetchData: (pageNo: number) => Promise<IInfinitePage<TItem>>;
     renderItem: (item: TItem) => JSX.Element;
@@ -23,82 +25,91 @@ function Infinite<TItem>({
     const [items, setItems] = useState<TItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [pageNo, setPageNo] = useState<number>(0);
-    const [totalPages, setTotalPages] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+
+    const fetchPage = useCallback(
+        async (pageNo: number) => {
+            setIsLoading(true);
+
+            const data = await fetchData(pageNo);
+
+            setItems(oldItems => oldItems.concat(data.items));
+            setTotalPages(data.totalPages);
+
+            setPageNo(pageNo);
+            setIsLoading(false);
+        },
+        [fetchData]
+    );
 
     const fetchNextPage = useCallback(
-        () => {
-            if (!isLoading) { 
-                setIsLoading(true);
-                const newPageNo = pageNo + 1;
-                fetchData(newPageNo).then(
-                    (data) => {
-                        setItems(oldItems => oldItems.concat(data.items));
-                        setIsLoading(false);
-                        setPageNo(newPageNo);
-                        if (data.totalPages !== totalPages) {
-                            setTotalPages(data.totalPages);
-                        }
-                    }
-                );
-            }
+        async () => {
+            await fetchPage(pageNo + 1);
         },
-        [fetchData, pageNo, isLoading, totalPages]
+        [fetchPage, pageNo]
     );
 
-    const onScroll = useCallback(
+    const isScrollBottom = useIsScrollBottom();
+    const needsNextPage = useCallback(
         () => {
-            const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
-            const body = document.body;
-            const html = document.documentElement;
-            const docHeight = Math.max(
-                body.scrollHeight,
-                body.offsetHeight,
-                html.clientHeight,
-                html.scrollHeight,
-                html.offsetHeight
-            );
-            const windowBottom = windowHeight + window.pageYOffset;
-            
-            if (
-                windowBottom >= docHeight - 1 && 
+            return (
+                isScrollBottom() &&
                 pageNo < totalPages
-            ) {
-                fetchNextPage();
-            }
+            );
         },
-        [fetchNextPage, pageNo, totalPages]
+        [pageNo, totalPages, isScrollBottom]
     );
 
-    useEffect(
-        () => {
-            // immediately triggering handler in case we need more items
-            // before user actually scrolls down
-            onScroll();
-            window.addEventListener("scroll", onScroll);
-            return () => window.removeEventListener("scroll", onScroll);
+    const getNextPageIfNeeded = useCallback(
+        async () => {
+            const getNextPageRecursively = async() => {
+                if (needsNextPage()) {
+                    await fetchNextPage();
+                    await getNextPageRecursively();
+                }
+            };
+            
+            if (!isLoading) {
+                await getNextPageRecursively();
+            }
         },
-        [onScroll]
+        [fetchNextPage, needsNextPage, isLoading]
     );
+
+    const onScroll = useCallback(getNextPageIfNeeded, [getNextPageIfNeeded]);
+    useWindowChangeListener(onScroll);
 
     // for the first page
-    useEffect(fetchNextPage, []);
+    useEffect(
+        () => {
+            if (pageNo === 0) {
+                const fetchNextPageAsync = async () => {
+                    await getNextPageIfNeeded()
+                };
+                fetchNextPageAsync();
+            }
+        },
+        [getNextPageIfNeeded, pageNo]
+    );
 
     return (
         <div className="infinite">
-            {!items && (
+            {!items.length && (
                 <div className="infinite__loader infinite__loader_initial">
                     <Loader />
                 </div>
             )}
-            {items && (
-                <div className="infinite__items">
-                    {items.map(renderItem)}
-                </div>
-            )}
-            {items && isLoading && (
-                <div className="infinite__loader infinite__loader_more">
-                    <Loader />
-                </div>
+            {!!items.length && (
+                <>
+                    <div className="infinite__items">
+                        {items.map(renderItem)}
+                    </div>
+                    {isLoading && (
+                        <div className="infinite__loader infinite__loader_more">
+                            <Loader />
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

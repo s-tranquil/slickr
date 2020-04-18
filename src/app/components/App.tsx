@@ -11,15 +11,6 @@ import { Photo } from "./Photo";
 import type { IInfinitePage } from "infinite";
 
 function App() {
-    //const [images, setImages] = React.useState<IRecentPictureCollection>();
-
-    // React.useEffect(
-    //     () => {
-    //         getPicturesList().then(setImages)
-    //     },
-    //     []
-    // );
-
     const getPhotos = useCallback(
         (pageNo: number) =>
             getPicturesList(pageNo)
@@ -32,7 +23,7 @@ function App() {
 
     const renderPhoto = useCallback(
         (photo: IRecentPicture) => (
-            <Photo photo={photo} />
+            <Photo key={photo.id} photo={photo} />
         ),
         []
     );
