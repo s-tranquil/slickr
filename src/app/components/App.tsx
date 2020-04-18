@@ -4,13 +4,19 @@ import "../styles/app.css";
 
 import { getPicturesList } from "client";
 import { IRecentPicture } from "client/contracts";
+import {
+    Favorite,
+    useFavoriteReducer
+} from "favorite";
+import { FavoriteActionType } from "favorite/contracts";
 import { Infinite } from "infinite";
 
 import { Photo } from "./Photo";
 
 import type { IInfinitePage } from "infinite";
-
 function App() {
+    const [state, dispatch] = useFavoriteReducer();
+
     const getPhotos = useCallback(
         (pageNo: number) =>
             getPicturesList(pageNo)
@@ -21,20 +27,40 @@ function App() {
         []
     );
 
+    const onClick = useCallback(
+        (photo: IRecentPicture) => {
+            dispatch({ 
+                type: FavoriteActionType.Add,
+                payload: photo 
+            })
+        },
+        [dispatch]
+    );
+
     const renderPhoto = useCallback(
         (photo: IRecentPicture) => (
-            <Photo key={photo.id} photo={photo} />
+            <Photo
+                key={photo.id}
+                photo={photo}
+                onClick={onClick}
+            />
         ),
-        []
+        [onClick]
     );
 
     return (
-        <div className="body">
-            <Infinite
-                fetchData={getPhotos}
-                renderItem={renderPhoto}
+        <>
+            <div className="body">
+                <Infinite
+                    fetchData={getPhotos}
+                    renderItem={renderPhoto}
+                />
+            </div>
+            <Favorite
+                state={state}
+                dispatch={dispatch}
             />
-        </div>
+        </>
     );
 }
 

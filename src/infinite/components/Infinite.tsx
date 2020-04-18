@@ -104,11 +104,11 @@ function Infinite<TItem>({
                     <div className="infinite__items">
                         {items.map(renderItem)}
                     </div>
-                    {isLoading && (
+                    {/* {isLoading && ( */}
                         <div className="infinite__loader infinite__loader_more">
                             <Loader />
                         </div>
-                    )}
+                    {/* )} */}
                 </>
             )}
         </div>
