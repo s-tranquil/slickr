@@ -12,7 +12,7 @@ const useWindowChangeListener = (handler: HandlerType) => {
     useEffect(
         () => {
             savedHandler.current = handler;
-        }, 
+        },
         [handler]
     );
 
@@ -21,7 +21,7 @@ const useWindowChangeListener = (handler: HandlerType) => {
             const eventListener = () => (savedHandler.current as HandlerType)();
             window.addEventListener("scroll", eventListener);
             window.addEventListener("resize", eventListener);
-    
+
             return () => {
                 window.removeEventListener("scroll", eventListener);
                 window.removeEventListener("resize", eventListener);

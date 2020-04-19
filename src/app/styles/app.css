@@ -1,7 +1,11 @@
 .body {
     height: 100%;
+    background-color: #e7e7e7;
 }
 
 .body .infinite {
     background-color: #e7e7e7;
+}
+.body_with_favorite .infinite {
+    padding-bottom: 160px;
 }

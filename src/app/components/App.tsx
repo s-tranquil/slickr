@@ -29,9 +29,9 @@ function App() {
 
     const onClick = useCallback(
         (photo: IRecentPicture) => {
-            dispatch({ 
+            dispatch({
                 type: FavoriteActionType.Add,
-                payload: photo 
+                payload: photo
             })
         },
         [dispatch]
@@ -50,16 +50,24 @@ function App() {
 
     return (
         <>
-            <div className="body">
+            <div
+                className={(
+                    state.items.length
+                        ? "body body_with_favorite"
+                        : "body"
+                )}
+            >
                 <Infinite
                     fetchData={getPhotos}
                     renderItem={renderPhoto}
                 />
             </div>
-            <Favorite
-                state={state}
-                dispatch={dispatch}
-            />
+            {!!state.items.length && (
+                <Favorite
+                    state={state}
+                    dispatch={dispatch}
+                />
+            )}
         </>
     );
 }

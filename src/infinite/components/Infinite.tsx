@@ -21,7 +21,7 @@ function Infinite<TItem>({
     renderItem,
     fetchData
 }: IProps<TItem>) {
-    // TODO: switch to reducer 
+    // TODO: switch to reducer
     const [items, setItems] = useState<TItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [pageNo, setPageNo] = useState<number>(0);
@@ -62,34 +62,27 @@ function Infinite<TItem>({
 
     const getNextPageIfNeeded = useCallback(
         async () => {
-            const getNextPageRecursively = async() => {
-                if (needsNextPage()) {
-                    await fetchNextPage();
-                    await getNextPageRecursively();
-                }
-            };
-            
-            if (!isLoading) {
-                await getNextPageRecursively();
+            if (needsNextPage()) {
+                await fetchNextPage();
             }
         },
-        [fetchNextPage, needsNextPage, isLoading]
+        [fetchNextPage, needsNextPage]
     );
 
     const onScroll = useCallback(getNextPageIfNeeded, [getNextPageIfNeeded]);
     useWindowChangeListener(onScroll);
 
-    // for the first page
+    // check if we need to load more after previous page loaded, and for the first page
     useEffect(
         () => {
-            if (pageNo === 0) {
+            if (!isLoading) {
                 const fetchNextPageAsync = async () => {
                     await getNextPageIfNeeded()
                 };
                 fetchNextPageAsync();
             }
         },
-        [getNextPageIfNeeded, pageNo]
+        [getNextPageIfNeeded, pageNo, isLoading]
     );
 
     return (
@@ -104,11 +97,11 @@ function Infinite<TItem>({
                     <div className="infinite__items">
                         {items.map(renderItem)}
                     </div>
-                    {/* {isLoading && ( */}
+                    {pageNo < totalPages && (
                         <div className="infinite__loader infinite__loader_more">
                             <Loader />
                         </div>
-                    {/* )} */}
+                    )}
                 </>
             )}
         </div>
