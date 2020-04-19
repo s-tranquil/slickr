@@ -10,4 +10,3 @@ const InitialState: IFavoriteState = {
 const useFavoriteReducer = () => useReducer(favoriteReducer, InitialState);
 
 export { useFavoriteReducer };
- 

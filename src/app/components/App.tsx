@@ -1,4 +1,7 @@
-import React, { useCallback } from "react";
+import React, {
+    useCallback,
+    useContext
+} from "react";
 
 import "../styles/app.css";
 
@@ -6,16 +9,17 @@ import { getPicturesList } from "client";
 import { IRecentPicture } from "client/contracts";
 import {
     Favorite,
-    useFavoriteReducer
+    FavoriteContext
 } from "favorite";
-import { FavoriteActionType } from "favorite/contracts";
 import { Infinite } from "infinite";
-
-import { Photo } from "./Photo";
+import {
+    Photo,
+    PhotoOverlay
+} from "photo";
 
 import type { IInfinitePage } from "infinite";
 function App() {
-    const [state, dispatch] = useFavoriteReducer();
+    const { favorites } = useContext(FavoriteContext);
 
     const getPhotos = useCallback(
         (pageNo: number) =>
@@ -27,32 +31,24 @@ function App() {
         []
     );
 
-    const onClick = useCallback(
-        (photo: IRecentPicture) => {
-            dispatch({
-                type: FavoriteActionType.Add,
-                payload: photo
-            })
-        },
-        [dispatch]
-    );
-
     const renderPhoto = useCallback(
         (photo: IRecentPicture) => (
             <Photo
                 key={photo.id}
                 photo={photo}
-                onClick={onClick}
+                overlay={(
+                    <PhotoOverlay photo={photo} />
+                )}
             />
         ),
-        [onClick]
+        []
     );
 
     return (
         <>
             <div
                 className={(
-                    state.items.length
+                    favorites.length
                         ? "body body_with_favorite"
                         : "body"
                 )}
@@ -62,11 +58,8 @@ function App() {
                     renderItem={renderPhoto}
                 />
             </div>
-            {!!state.items.length && (
-                <Favorite
-                    state={state}
-                    dispatch={dispatch}
-                />
+            {!!favorites.length && (
+                <Favorite />
             )}
         </>
     );

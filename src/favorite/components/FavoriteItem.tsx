@@ -1,36 +1,31 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import "../styles/favorite.css";
 
-import { Photo } from "app/components/Photo";
 import { IRecentPicture } from "client/contracts";
 import {
-    FavoriteActionType,
-    IFavoriteAction
-} from "favorite/contracts";
+    Photo,
+    PhotoOverlay
+} from "photo";
 
 interface IProps {
     item: IRecentPicture;
-    dispatch: React.Dispatch<IFavoriteAction>
 }
 
 const FavoriteItem: React.FC<IProps> = ({
-    item,
-    dispatch
+    item
 }) => {
-    const onClick = useCallback(
-        () => {
-            dispatch({
-                type: FavoriteActionType.Remove,
-                payload: item
-            })
-        },
-        [item, dispatch]
-    );
-    
     return (
         <div className="favorite__item">
-            <Photo photo={item} onClick={onClick} />
+            <Photo
+                photo={item}
+                overlay={(
+                    <PhotoOverlay
+                        photo={item}
+                        compact={true}
+                    />
+                )}
+            />
         </div>
     );
 };

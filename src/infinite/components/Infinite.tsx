@@ -1,4 +1,5 @@
 import React, {
+    Fragment,
     useCallback,
     useEffect,
     useState
@@ -53,11 +54,12 @@ function Infinite<TItem>({
     const needsNextPage = useCallback(
         () => {
             return (
+                !isLoading &&
                 isScrollBottom() &&
                 pageNo < totalPages
             );
         },
-        [pageNo, totalPages, isScrollBottom]
+        [pageNo, totalPages, isScrollBottom, isLoading]
     );
 
     const getNextPageIfNeeded = useCallback(
@@ -82,7 +84,18 @@ function Infinite<TItem>({
                 fetchNextPageAsync();
             }
         },
-        [getNextPageIfNeeded, pageNo, isLoading]
+        [getNextPageIfNeeded, isLoading]
+    );
+
+    const renderKeyed = useCallback(
+        (item: TItem, index: number) => (
+            // it's okay to address by index, we only adding items to the end
+            // we cannot key by id, because there could be duplicates
+            <Fragment key={index}>
+                {renderItem(item)}
+            </Fragment>
+        ),
+        [renderItem]
     );
 
     return (
@@ -95,7 +108,7 @@ function Infinite<TItem>({
             {!!items.length && (
                 <>
                     <div className="infinite__items">
-                        {items.map(renderItem)}
+                        {items.map(renderKeyed)}
                     </div>
                     {pageNo < totalPages && (
                         <div className="infinite__loader infinite__loader_more">

@@ -1,0 +1,52 @@
+.photo {
+    width: 240px;
+    height: 180px;
+    padding: 0.5rem;
+    position: relative;
+}
+
+.photo__frame {
+    position: relative;
+    border-radius: 2%;
+
+    width: 100%;
+    height: 100%;
+}
+
+.photo__image {
+    border-radius: 2%;
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    box-shadow: 1px 1px 1px 1px rgba(200, 200, 200, 1);
+}
+
+.photo:hover .overlay {
+    opacity: .85;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .3s ease;
+    background-color: #9e9e9e;
+    border-radius: 2%;
+}
+
+.overlay__text {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}

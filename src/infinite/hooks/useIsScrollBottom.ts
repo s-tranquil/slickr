@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 
+const loaderHeight = 200;
+
 // determines if window scroll is at the bottom of the page
 const useIsScrollBottom = () => useCallback(
     () => {
@@ -15,7 +17,7 @@ const useIsScrollBottom = () => useCallback(
         );
         const windowBottom = windowHeight + window.pageYOffset;
 
-        return  windowBottom >= docHeight - 1;
+        return  windowBottom >= docHeight - 1 - loaderHeight;
     },
     []
 );
