@@ -36,13 +36,17 @@ const PhotoOverlay: React.FC<IProps> = ({
 
     return (
         <div className="overlay">
-            <div className="overlay__text">
+            <div className="overlay__content">
                 {!compact && (
-                    <>
-                        <div>{photo.title}</div>
-                        <hr />
-                        <div>{photo.ownername}</div>
-                    </>
+                    <div className="overlay__caption">
+                        <div className="overlay__text overlay__text-bold">
+                            {photo.title}
+                        </div>
+                        <hr className="overlay__line"/>
+                        <div className="overlay__text overlay__text-italic">
+                            {photo.ownername}
+                        </div>
+                    </div>
                 )}
                 <button
                     className="overlay__button"
