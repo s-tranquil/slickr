@@ -1,12 +1,36 @@
-import { useReducer } from "react";
+import {
+    useEffect,
+    useReducer
+} from "react";
 
 import { IFavoriteState } from "favorite/contracts";
 import { favoriteReducer } from "favorite/reducers/favoriteReducer";
 
-const InitialState: IFavoriteState = {
+const initialState: IFavoriteState = {
     items: []
 };
 
-const useFavoriteReducer = () => useReducer(favoriteReducer, InitialState);
+const localStorageUserKey = "slickr:favorite";
+
+const useFavoriteReducer = () => {
+    const localStorageJson = localStorage.getItem(localStorageUserKey);
+    const initial = localStorageJson
+        ? JSON.parse(localStorageJson)
+        : initialState;
+
+    const [state, dispatch] = useReducer(favoriteReducer, initial);
+
+    useEffect(
+        () => {
+            return () => localStorage.setItem(
+                localStorageUserKey,
+                JSON.stringify(state)
+            );
+        },
+        [state]
+    );
+
+    return [state, dispatch];
+}
 
 export { useFavoriteReducer };
