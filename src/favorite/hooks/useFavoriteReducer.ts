@@ -26,7 +26,7 @@ function useFavoriteReducer(): [IFavoriteState, Dispatch<IFavoriteAction>]  {
 
     useEffect(
         () => {
-            return () => localStorage.setItem(
+            localStorage.setItem(
                 localStorageUserKey,
                 JSON.stringify(state)
             );

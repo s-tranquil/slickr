@@ -87,17 +87,6 @@ function Infinite<TItem>({
         [getNextPageIfNeeded, isLoading]
     );
 
-    const renderKeyed = useCallback(
-        (item: TItem, index: number) => (
-            // it's okay to address by index, we only adding items to the end
-            // we cannot key by id, because there could be duplicates
-            <Fragment key={index}>
-                {renderItem(item)}
-            </Fragment>
-        ),
-        [renderItem]
-    );
-
     return (
         <div className="infinite">
             {!items.length && (
@@ -108,7 +97,13 @@ function Infinite<TItem>({
             {!!items.length && (
                 <>
                     <div className="infinite__items">
-                        {items.map(renderKeyed)}
+                        {items.map((item: TItem, index: number) => (
+                            <InfiniteItem
+                                item={item}
+                                renderItem={renderItem}
+                                index={index}
+                            />
+                        ))}
                     </div>
                     {pageNo < totalPages && (
                         <div className="infinite__loader infinite__loader_more">
@@ -118,6 +113,24 @@ function Infinite<TItem>({
                 </>
             )}
         </div>
+    );
+}
+
+function InfiniteItem<T>(
+    {
+       item,
+       renderItem,
+       index
+    }: {
+        item: T,
+        renderItem: (item: T) => React.ReactElement,
+        index: number
+    }
+) {
+    return (
+        <Fragment key={index}>
+            {renderItem(item)}
+        </Fragment>
     );
 }
 
