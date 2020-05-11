@@ -7,10 +7,11 @@ import React, {
 
 import "../styles/infinite.css";
 
-import { useIsScrollBottom } from "infinite/hooks/useIsScrollBottom";
+import {
+    useIsScrollBottom,
+    useWindowChangeListener
+} from "infinite/hooks";
 import { Loader } from "loader";
-
-import { useWindowChangeListener } from "../hooks/useWindowChangeListener";
 
 import type { IInfinitePage } from "../contracts/IInfinitePage";
 interface IProps<TItem> {
@@ -75,7 +76,7 @@ function Infinite<TItem>({
     useWindowChangeListener(onScroll);
 
     // check if we need to load more after previous page loaded, and for the first page
-    useEffect(
+    React.useEffect(
         () => {
             if (!isLoading) {
                 const fetchNextPageAsync = async () => {
@@ -98,10 +99,11 @@ function Infinite<TItem>({
                 <>
                     <div className="infinite__items">
                         {items.map((item: TItem, index: number) => (
+                            // it's okay to use index as a key as we only extend items array
                             <InfiniteItem
+                                key={index}
                                 item={item}
                                 renderItem={renderItem}
-                                index={index}
                             />
                         ))}
                     </div>
@@ -116,22 +118,18 @@ function Infinite<TItem>({
     );
 }
 
+// It is an empty wrapper
+// Needed because if replaced with <React.Fragment> stops working in production build
 function InfiniteItem<T>(
     {
        item,
-       renderItem,
-       index
+       renderItem
     }: {
         item: T,
-        renderItem: (item: T) => React.ReactElement,
-        index: number
+        renderItem: (item: T) => React.ReactElement
     }
 ) {
-    return (
-        <Fragment key={index}>
-            {renderItem(item)}
-        </Fragment>
-    );
+    return (<>{renderItem(item)}</>);
 }
 
 export { Infinite };
