@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch } from "react";
 
 import {
     mount,
@@ -21,13 +21,19 @@ const renderInfinite = (fetchData: (pageNo: number) => Promise<IInfinitePage<ITe
 );
 
 const renderEmpty = () => {
-    jest.spyOn(React, "useEffect").mockImplementation(_ => {});
     const emptyDataMock = jest.fn().mockResolvedValue([] as ITestData[]);
     return renderInfinite(emptyDataMock);
 }
 
 describe("Infinite", () => {
     beforeEach(() => {
+        jest.spyOn(React, "useCallback").mockImplementation(callback => (...args) => callback(args));
+        jest.spyOn(React, "useState").mockImplementation(((initialState: unknown) => {
+            let state: unknown = initialState;
+            const setState: Dispatch<unknown> = (newState) => state = newState;
+            return [state, setState] as [unknown, Dispatch<unknown>];
+        }) as any);
+        jest.spyOn(React, "useEffect").mockImplementation(_ => {});
         jest.mock("infinite/hooks", () => ({
             useIsScrollBottom: jest.fn(() => () => true),
             useWindowChangeListener: jest.fn((_) => {})

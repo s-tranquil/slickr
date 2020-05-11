@@ -112,7 +112,9 @@ exports[`Infinite matches snapshot when one page passed 1`] = `
     [MockFunction] {
       "calls": Array [
         Array [
-          1,
+          Array [
+            1,
+          ],
         ],
       ],
       "results": Array [

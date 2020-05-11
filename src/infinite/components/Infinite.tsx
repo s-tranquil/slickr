@@ -1,9 +1,4 @@
-import React, {
-    Fragment,
-    useCallback,
-    useEffect,
-    useState
-} from "react";
+import React from "react";
 
 import "../styles/infinite.css";
 
@@ -24,12 +19,12 @@ function Infinite<TItem>({
     fetchData
 }: IProps<TItem>) {
     // TODO: switch to reducer
-    const [items, setItems] = useState<TItem[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [pageNo, setPageNo] = useState<number>(0);
-    const [totalPages, setTotalPages] = useState<number>(1);
+    const [items, setItems] = React.useState<TItem[]>([]);
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [pageNo, setPageNo] = React.useState<number>(0);
+    const [totalPages, setTotalPages] = React.useState<number>(1);
 
-    const fetchPage = useCallback(
+    const fetchPage = React.useCallback(
         async (pageNo: number) => {
             setIsLoading(true);
 
@@ -44,7 +39,7 @@ function Infinite<TItem>({
         [fetchData]
     );
 
-    const fetchNextPage = useCallback(
+    const fetchNextPage = React.useCallback(
         async () => {
             await fetchPage(pageNo + 1);
         },
@@ -52,7 +47,7 @@ function Infinite<TItem>({
     );
 
     const isScrollBottom = useIsScrollBottom();
-    const needsNextPage = useCallback(
+    const needsNextPage = React.useCallback(
         () => {
             return (
                 !isLoading &&
@@ -63,7 +58,7 @@ function Infinite<TItem>({
         [pageNo, totalPages, isScrollBottom, isLoading]
     );
 
-    const getNextPageIfNeeded = useCallback(
+    const getNextPageIfNeeded = React.useCallback(
         async () => {
             if (needsNextPage()) {
                 await fetchNextPage();
@@ -72,7 +67,7 @@ function Infinite<TItem>({
         [fetchNextPage, needsNextPage]
     );
 
-    const onScroll = useCallback(getNextPageIfNeeded, [getNextPageIfNeeded]);
+    const onScroll = React.useCallback(getNextPageIfNeeded, [getNextPageIfNeeded]);
     useWindowChangeListener(onScroll);
 
     // check if we need to load more after previous page loaded, and for the first page
